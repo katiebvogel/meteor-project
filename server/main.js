@@ -10,45 +10,67 @@ Meteor.startup(() => {
     secretAccessKey: 'Ca8gPIsqJYTRq3qmOt0wnxFUPpMf1V2QspQdKDgT',
     'region': 'us-east-1'
   });
-  // var data = JSON.parse(json);
-  var s3client = new AWS.S3({
-    accessKeyId: 'AKIAIFL53HKHV6NO37LA',
-    secretAccessKey: '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'
-  });
-  var downloader = require('s3-download')(s3client);
 
   var s3 = new AWS.S3({apiVersion: '2006-03-01'});
   var params = {
     Bucket: 'bucket.evereve.com',
     Key: 'products.json'
   };
-  var sessionParams = {
-    maxPartSize: '20MB',
-    totalObjectSize: '19MB'
-  };
+  // var sessionParams = {
+  //   maxPartSize: '20MB',
+  //   totalObjectSize: '19MB'
+  // };
 
-var d = downloader.download(params, sessionParams);
-d.on('errror', function(err) {
-  console.log('error', err);
-});
-d.on('downloaded', function(data) {
-  console.log('success', data);
-});
+
+
+//~~~~~~~~~~~~~This tiny code chunk works!!!!  Creates a new local file with the jsonArray from s3 bucket. ~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var file = fs.createWriteStream('/Users/katherinevogel/Codespace/meteor-project/newFile.json');
+s3.getObject(params).createReadStream().pipe(file);
+
+//~~~~~~~~~~~~~End tiny code chunk Creates a new local file with the jsonArray from s3 bucket. ~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+/// below we reassign id's to the json objects //
+// if we leave all the id fields as " ", mongoimport reads this as duplicate id fields ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// var w = fs.createWriteStream('./file.json');
-// d.pipe(w);
-// s3.getObject(params, function (err, data) {
-//   if (err) {
-//     console.log('error', err);
-//   } else {
-//     var objectData = data.Body.toString('utf-8');
-//   }
-// });
-
-// var file = fs.createWriteStream('./file.json');
-// s3.getObject(params).createReadStream().pipe(file);
-
+// function newData(myFile, myData) {
+//   var myData = '/Users/katherinevogel/Desktop/everData.json';
+//   fs.readFile('/Users/katherinevogel/Desktop/everData.json', 'utf-8', function (err, data) {
+//     if (err) throw err;
+//     var parseData = JSON.parse(data);
+//     for (var i = 0; i < parseData.length; i++) {
+//       var product = parseData[i];
+//       var newId = i.toString();
+//       product._id = newId;
+//       // console.log('product: ', product);
+//     }
+//     var newData = JSON.stringify(parseData);
+//     fs.writeFile ('/Users/katherinevogel/Codespace/meteor-project/file.json', newData, function(err) {
+//       if (err) throw err;
+//       console.log('completed');
+//     });
+//   });
+// }
 //
+// newData();
+
+/// ~~~~~~~~~~~~~~~~~~   end chunk for assigning id's ~~~~~~~~~~~~~
+
+
+
+
+
+
+
+  ///~~~~~~~~~~~~~~~~~~~   code below attempts to "get" the json array from s3 bucket and read it in chunks.  errors ensue
+  // ~~~~~~~~~~~~~~~~~~~~~~
+
 //   s3.getObject(params, function (err, data) {
 //     if (err) {
 //       console.log('error is here', err);
@@ -78,66 +100,10 @@ d.on('downloaded', function(data) {
 //     };
 //   };
 // });
+// ~~~~~~~~~~~~~~~~~~~~~~ end code chunk about reading out chunked data ~~~~~~~~~ //
 
 
 
-
-// function updateId() {
-// var myData = '/Users/katherinevogel/Desktop/everData.json';
-//   for (var i = 0; i < myData.length; i++) {
-//     product = myData[i];
-//     var currentId = '_id';
-//     var newId = i.toString();
-//     product.currentId = newId;
-//     console.log('product info: ', product);
-//   };
-// };
-
-function newData(myFile, myData) {
-  var myData = '/Users/katherinevogel/Desktop/everData.json';
-  fs.readFile('/Users/katherinevogel/Desktop/everData.json', 'utf-8', function (err, data) {
-    if (err) throw err;
-    var parseData = JSON.parse(data);
-    for (var i = 0; i < parseData.length; i++) {
-      var product = parseData[i];
-      var newId = i.toString();
-      product._id = newId;
-      // console.log('product: ', product);
-    }
-    var newData = JSON.stringify(parseData);
-    fs.writeFile ('/Users/katherinevogel/Codespace/meteor-project/file.json', newData, function(err) {
-      if (err) throw err;
-      console.log('completed');
-    });
-  });
-}
-
-newData();
-
-// var myFile = './file.json';
-// function changeData(myFile, myData) {
-//   var myData = '/Users/katherinevogel/Desktop/everData.json';
-//   fs.readFile('/Users/katherinevogel/Desktop/everData.json', 'utf-8', function (err, data) {
-//     if (err) throw err;
-//     fs.writeFile ('/Users/katherinevogel/Codespace/meteor-project/file.json', data, function(err) {
-//       if (err) throw err;
-//       console.log('completed');
-//     });
-//   });
-// }
-//
-// changeData();
-
-
-//
-// var write = function(stuff) { fs.writeFile('Users/katherinevogel/Codespace/meteor-project/file.json', stuff, function (err) {
-//   if (err) {
-//     console.log('error writing your file');
-//   } else {
-//     console.log('success writing file');
-//   }
-// });
-// };
 
 
 
